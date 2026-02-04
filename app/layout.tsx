@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "DevEvent",
   description: "The hub for every Dev Event you mustn'nt Miss",
 };
-
+import PostHogProvider from "../components/PostHogProvider";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,6 +44,7 @@ export default function RootLayout({
             className="custom-rays"
           />
         </div>
+        <PostHogProvider />
         <main>{children}</main>
       </body>
     </html>
