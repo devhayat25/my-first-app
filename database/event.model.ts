@@ -5,9 +5,11 @@ import {
   Document,
   CallbackWithoutResult,
 } from "mongoose";
+import { Key } from "react";
 
 // TypeScript interface for Event document
 export interface IEvent extends Document {
+  id: Key | null | undefined;
   title: string;
   slug: string;
   description: string;
@@ -78,6 +80,8 @@ const EventSchema = new Schema<IEvent>(
     mode: {
       type: String,
       required: [true, "Mode is required"],
+      lowercase: true,
+      trim: true,
       enum: {
         values: ["online", "offline", "hybrid"],
         message: "Mode must be either online, offline, or hybrid",

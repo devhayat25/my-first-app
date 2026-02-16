@@ -26,6 +26,9 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
 
+    let tags = JSON.parse(formData.get("tags") as string);
+    let agenda = JSON.parse(formData.get("agenda") as string);
+
     // Convert file to buffer in Node/Next.js environment
     const buffer = Buffer.from(await new Response(file).arrayBuffer());
 
@@ -43,7 +46,11 @@ export async function POST(req: NextRequest) {
 
     event.image = (uploadResult as { secure_url: string }).secure_url;
 
-    const createdEvent = await Event.create(event);
+    const createdEvent = await Event.create({
+      ...event,
+      tags: tags,
+      agenda: agenda,
+    });
     return NextResponse.json(
       {
         message: "Event created Successfully",
@@ -58,6 +65,23 @@ export async function POST(req: NextRequest) {
         message: "Event Creation Failed",
         error: e instanceof Error ? e.message : "Unknown",
       },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    await connectDB();
+
+    const events = await Event.find().sort({ createdAt: -1 });
+    return NextResponse.json(
+      { message: "Events fetched Successfully", events },
+      { status: 200 },
+    );
+  } catch (e) {
+    return NextResponse.json(
+      { message: "Event fetching failed", error: e },
       { status: 500 },
     );
   }
