@@ -4,6 +4,7 @@ import BookEvent from "@/components/BookEvent";
 import { IEvent } from "@/database";
 import EventCard from "@/components/EventCard";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import { cacheLife } from "next/cache";
 // Provide a fallback BASE_URL for development
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
@@ -48,23 +49,25 @@ const EventDetailsPage = async ({
 }: {
   params: Promise<{ slug: string }>;
 }) => {
+  "use cache";
+  cacheLife("hours");
   const { slug } = await params;
   const request = await fetch(`${BASE_URL}/api/events/${slug}`);
+  const { event } = await request.json();
   const {
-    event: {
-      description,
-      image,
-      overview,
-      date,
-      time,
-      location,
-      mode,
-      agenda,
-      audience,
-      tags,
-      organizer,
-    },
-  } = await request.json();
+    description,
+    image,
+    overview,
+    date,
+    time,
+    location,
+    mode,
+    agenda,
+    audience,
+    tags,
+    organizer,
+  } = event;
+
   if (!description) return notFound();
 
   const bookings = 10; // Placeholder for number of bookings, replace with actual data when available
@@ -126,7 +129,7 @@ const EventDetailsPage = async ({
             ) : (
               <p className="text-sm">Be the First to book your spot!</p>
             )}
-            <BookEvent />
+            <BookEvent eventId={event._id} slug={event.slug} />
           </div>
         </aside>
       </div>
