@@ -3,13 +3,30 @@ import EventCard from "@/components/EventCard";
 import { EventItem } from "@/lib/constants";
 import { cacheLife } from "next/cache";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
 const Page = async () => {
   "use cache";
   cacheLife("hours");
-  const response = await fetch(`${BASE_URL}/api/events`);
-  const { events } = await response.json();
+
+  let events: EventItem[] = [];
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/events`, {
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    events = data.events || [];
+  } catch (error) {
+    console.error("Failed to fetch events:", error);
+    // Keep events as empty array as fallback
+    events = [];
+  }
 
   return (
     <section>
