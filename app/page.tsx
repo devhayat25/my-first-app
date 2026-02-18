@@ -14,7 +14,8 @@ const Page = async () => {
   let events: IEvent[] = [];
 
   try {
-    const response = await fetch(`${BASE_URL}/api/events`);
+    const response = await fetch("/api/events", { cache: "no-store" });
+
     const data = await response.json();
     events = data.events || [];
   } catch (error) {
