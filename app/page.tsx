@@ -7,9 +7,6 @@ import { cacheLife } from "next/cache";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Page = async () => {
-  "use cache";
-  cacheLife("hours");
-
   // ✅ Use try/catch to prevent production crash if API fails
   let events: IEvent[] = [];
 
