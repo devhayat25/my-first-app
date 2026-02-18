@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+
 import connectDB from "@/lib/mongodb";
 import Event from "@/database/event.model";
-import { error } from "console";
 
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
+
     const formData = await req.formData();
 
     let event;
@@ -19,18 +20,20 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
+
     const file = formData.get("image") as File;
+
     if (!file)
       return NextResponse.json(
-        { message: "Image File is Required" },
+        { message: "Image file is required" },
         { status: 400 },
       );
 
     let tags = JSON.parse(formData.get("tags") as string);
     let agenda = JSON.parse(formData.get("agenda") as string);
 
-    // Convert file to buffer in Node/Next.js environment
-    const buffer = Buffer.from(await new Response(file).arrayBuffer());
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader
@@ -38,6 +41,7 @@ export async function POST(req: NextRequest) {
           { resource_type: "image", folder: "DevEvent" },
           (error, results) => {
             if (error) return reject(error);
+
             resolve(results);
           },
         )
@@ -51,11 +55,9 @@ export async function POST(req: NextRequest) {
       tags: tags,
       agenda: agenda,
     });
+
     return NextResponse.json(
-      {
-        message: "Event created Successfully",
-        event: createdEvent,
-      },
+      { message: "Event created successfully", event: createdEvent },
       { status: 201 },
     );
   } catch (e) {
@@ -75,8 +77,9 @@ export async function GET() {
     await connectDB();
 
     const events = await Event.find().sort({ createdAt: -1 });
+
     return NextResponse.json(
-      { message: "Events fetched Successfully", events },
+      { message: "Events fetched successfully", events },
       { status: 200 },
     );
   } catch (e) {

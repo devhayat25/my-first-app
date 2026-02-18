@@ -1,5 +1,7 @@
 "use server";
+
 import Booking from "@/database/booking.model";
+
 import connectDB from "@/lib/mongodb";
 
 export const createBooking = async ({
@@ -13,7 +15,8 @@ export const createBooking = async ({
 }) => {
   try {
     await connectDB();
-    const booking = await Booking.create({ eventId, slug, email });
+
+    await Booking.create({ eventId, slug, email });
 
     return { success: true };
   } catch (e) {
