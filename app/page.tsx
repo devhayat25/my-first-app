@@ -3,23 +3,13 @@ import EventCard from "@/components/EventCard";
 import { IEvent } from "@/database";
 import { cacheLife } from "next/cache";
 
-// Keep your BASE_URL as you wrote it
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Page = async () => {
-  // ✅ Use try/catch to prevent production crash if API fails
-  let events: IEvent[] = [];
-
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/events`,
-      { cache: "no-store" },
-    );
-    const data = await response.json();
-    events = data.events || [];
-  } catch (error) {
-    console.error("Error fetching events:", error);
-  }
+  "use cache";
+  cacheLife("hours");
+  const response = await fetch(`${BASE_URL}/api/events`);
+  const { events } = await response.json();
 
   return (
     <section>
