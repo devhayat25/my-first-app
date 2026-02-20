@@ -1,10 +1,4 @@
-import {
-  Schema,
-  model,
-  models,
-  Document,
-  CallbackWithoutResult,
-} from "mongoose";
+import { Schema, model, models, Document } from "mongoose";
 import Event from "./event.model";
 
 // TypeScript interface for Booking document
